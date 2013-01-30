@@ -106,19 +106,22 @@ namespace FastDFS.Client
         {
             base.SendRequest(outputStream);
 
+            long total = 0;
             int bytesRead = 0;
             byte[] buffer = new byte[512 * 1024];
             while ((bytesRead = Stream.Read(buffer, 0, buffer.Length)) > 0)
             {
                 outputStream.Write(buffer, 0, bytesRead);
+                total += bytesRead;
             }
+            Console.WriteLine("total : {0}", total);
         }
 
-        public class Response
+        public class Response : FDFSResponse
         {
             public string GroupName;
             public string FileName;
-            public Response(byte[] responseBody)
+            protected override void LoadContent(byte[] responseBody)
             {
                 byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
                 Array.Copy(responseBody, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);

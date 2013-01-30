@@ -70,12 +70,12 @@ namespace FastDFS.Client
             return result;
         }
 
-        public class Response
+        public class Response : FDFSResponse
         {
             public string GroupName;
             public string IPStr;
             public int Port;
-            public Response(byte[] responseByte)
+            protected override void LoadContent(byte[] responseByte)
             {
                 byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
                 Array.Copy(responseByte, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);

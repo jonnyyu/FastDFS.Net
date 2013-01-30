@@ -47,5 +47,14 @@ namespace FastDFS.Client
         public const byte FDFS_PROTO_CMD_QUIT = 82;//未确认
 
 
+
+        public const byte METADATA_KEY_VALUE_SEPARATOR = 0x02;
+        public const byte METADATA_PAIR_SEPARATER = 0x01;
+    }
+
+    public enum MetaDataOption
+    {
+        Overwrite,
+        Merge
     }
 }

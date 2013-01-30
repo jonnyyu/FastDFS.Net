@@ -53,64 +53,77 @@ namespace FastDFS.Client
                    (((long)(buffer[offset + 6] >= 0 ? buffer[offset + 6] : 256 + buffer[offset + 6])) << 8) |
                    ((buffer[offset + 7] >= 0 ? buffer[offset + 7] : 256 + buffer[offset + 7]));
         }
-       
+
         public static string ByteToString(byte[] input)
         {
             char[] chars = FDFSConfig.Charset.GetChars(input);
-            string result = new string(chars, 0, input.Length);
+            string result = new string(chars, 0, chars.Length);
+            return result;
+        }
+
+        public static string ByteToString(byte[] input, int startIndex, int count)
+        {
+            char[] chars = FDFSConfig.Charset.GetChars(input, startIndex, count);
+            string result = new string(chars, 0, chars.Length);
             return result;
         }
 
         public static byte[] StringToByte(string input)
         {
-            return FDFSConfig.Charset.GetBytes(input);            
+            return FDFSConfig.Charset.GetBytes(input);
         }
 
- /// <summary>
- /// get token for file URL
- /// </summary>
- /// <param name="file_id">file_id the file id return by FastDFS server</param>
- /// <param name="ts">ts unix timestamp, unit: second</param>
- /// <param name="secret_key">secret_key the secret key</param>
- /// <returns>token string</returns>
+        public static byte[] CreateGroupNameBuffer(string groupName)
+        {
+            byte[] groupBytes = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
+            byte[] bytes = Util.StringToByte(groupName);
+            Array.Copy(bytes, groupBytes, Math.Min(groupBytes.Length, bytes.Length));
+            return groupBytes;
+        }
 
-public static string GetToken(string file_id, int ts, string secret_key)
-{
-    byte[] bsFileId = StringToByte(file_id);
-    byte[] bsKey = StringToByte(secret_key);
-    byte[] bsTimestamp = StringToByte(ts.ToString());
+        /// <summary>
+        /// get token for file URL
+        /// </summary>
+        /// <param name="file_id">file_id the file id return by FastDFS server</param>
+        /// <param name="ts">ts unix timestamp, unit: second</param>
+        /// <param name="secret_key">secret_key the secret key</param>
+        /// <returns>token string</returns>
 
-    byte[] buff = new byte[bsFileId.Length + bsKey.Length + bsTimestamp.Length];
-    Array.Copy(bsFileId, 0, buff, 0, bsFileId.Length);
-    Array.Copy(bsKey, 0, buff, bsFileId.Length, bsKey.Length);
-    Array.Copy(bsTimestamp, 0, buff, bsFileId.Length + bsKey.Length, bsTimestamp.Length);
+        public static string GetToken(string file_id, int ts, string secret_key)
+        {
+            byte[] bsFileId = StringToByte(file_id);
+            byte[] bsKey = StringToByte(secret_key);
+            byte[] bsTimestamp = StringToByte(ts.ToString());
 
-    return md5(buff);
-}
- /// <summary>
- /// md5 function
- /// </summary>
- /// <param name="source">source the input buffer </param>
-/// <returns>md5 string </returns>
-public static string md5(byte[] source)
- {
+            byte[] buff = new byte[bsFileId.Length + bsKey.Length + bsTimestamp.Length];
+            Array.Copy(bsFileId, 0, buff, 0, bsFileId.Length);
+            Array.Copy(bsKey, 0, buff, bsFileId.Length, bsKey.Length);
+            Array.Copy(bsTimestamp, 0, buff, bsFileId.Length + bsKey.Length, bsTimestamp.Length);
 
-     string pwd = "";
-     MD5 md5 = MD5.Create();//实例化一个md5对像
-     // 加密后是一个字节类型的数组，这里要注意编码UTF8/Unicode等的选择　
-     byte[] s = md5.ComputeHash(source);
-     // 通过使用循环，将字节类型的数组转换为字符串，此字符串是常规字符格式化所得
-     for (int i = 0; i < s.Length; i++)
-     {
-         // 将得到的字符串使用十六进制类型格式。格式后的字符是小写的字母，如果使用大写（X）则格式后的字符是大写字符 
-         pwd = pwd + s[i].ToString("X2");
-         int len = pwd.Length;
+            return md5(buff);
+        }
+        /// <summary>
+        /// md5 function
+        /// </summary>
+        /// <param name="source">source the input buffer </param>
+        /// <returns>md5 string </returns>
+        public static string md5(byte[] source)
+        {
 
-     }
-     return pwd.ToLower();
- }
+            string pwd = "";
+            MD5 md5 = MD5.Create();//实例化一个md5对像
+            // 加密后是一个字节类型的数组，这里要注意编码UTF8/Unicode等的选择　
+            byte[] s = md5.ComputeHash(source);
+            // 通过使用循环，将字节类型的数组转换为字符串，此字符串是常规字符格式化所得
+            for (int i = 0; i < s.Length; i++)
+            {
+                // 将得到的字符串使用十六进制类型格式。格式后的字符是小写的字母，如果使用大写（X）则格式后的字符是大写字符 
+                pwd = pwd + s[i].ToString("X2");
+                int len = pwd.Length;
 
-
+            }
+            return pwd.ToLower();
+        }
 
     }
 }

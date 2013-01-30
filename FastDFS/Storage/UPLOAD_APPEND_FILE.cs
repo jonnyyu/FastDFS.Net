@@ -93,11 +93,11 @@ namespace FastDFS.Client
             return result;
         }
 
-        public class Response
+        public class Response : FDFSResponse
         {
             public string GroupName;
             public string FileName;
-            public Response(byte[] responseBody)
+            protected override void LoadContent(byte[] responseBody)
             {
                 byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
                 Array.Copy(responseBody, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);

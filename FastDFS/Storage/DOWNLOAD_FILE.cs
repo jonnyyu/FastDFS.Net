@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace FastDFS.Client
 {
@@ -86,12 +87,38 @@ namespace FastDFS.Client
             return result;
         }
 
-        public class Response
+        public class Response : FDFSResponse
         {
             public byte[] Content;
-            public Response(byte[] responseByte)
+            protected override void LoadContent(byte[] responseByte)
             {
                 Content = responseByte;
+            }
+        }
+
+        public class ResponseEx : FDFSResponse
+        {
+            public string FullPath;
+            public ResponseEx(string fullPath)
+            {
+                FullPath = fullPath;
+            }
+
+            public override void ReceiveResponse(System.IO.Stream inStream, long length)
+            {
+                using (FileStream fs = new FileStream(FullPath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+                {
+                    byte[] buf = new byte[512 * 1024];
+                    long total = 0;
+                    int bytesRead = 0;
+                    while ((bytesRead = inStream.Read(buf, 0, buf.Length)) > 0)
+                    {
+                        fs.Write(buf, 0, bytesRead);
+                        total += bytesRead;
+                        if (total == length)
+                            break;
+                    }
+                }
             }
         }
     }

@@ -49,13 +49,16 @@ namespace FastDFS.Client
         {
             byte[] headerBuffer = this._header.ToByte();
             outputStream.Write(headerBuffer, 0, headerBuffer.Length);
-            outputStream.Flush();
-            outputStream.Flush();
-            outputStream.Flush();
             outputStream.Write(this._body, 0, this._body.Length);
         }
 
-        public virtual byte[] GetResponse()
+
+        public void GetResponse()
+        {
+            GetResponse(null);
+        }
+        
+        public virtual void GetResponse(FDFSResponse response)
         {
             if(this._connection == null)
                 this._connection = ConnectionManager.GetTrackerConnection();
@@ -69,12 +72,10 @@ namespace FastDFS.Client
                 FDFSHeader header = new FDFSHeader(stream);
                 if (header.Status != 0)
                     throw new FDFSException(string.Format("Get Response Error,Error Code:{0}", header.Status));
-                byte[] body = new byte[header.Length];
-                if (header.Length != 0)                
-                    stream.Read(body, 0, (int)header.Length);
-                
+
+                if (response != null)
+                    response.ReceiveResponse(stream, header.Length);
                 _connection.Close();
-                return body;
             }
             catch(Exception ex)
             {
@@ -84,6 +85,18 @@ namespace FastDFS.Client
                 //      -> 或者 pkg length is not correct
                 //2     -〉没有此文件 error info: No such file or directory.
             }            
+        }
+    }
+
+    public class FDFSResponse
+    {
+        public virtual void ReceiveResponse(Stream stream, long length) {
+            byte[] content = new byte[length];
+            stream.Read(content, 0, (int)length);
+            LoadContent(content);
+        }
+        protected virtual void LoadContent(byte[] content)
+        {
         }
     }
 }

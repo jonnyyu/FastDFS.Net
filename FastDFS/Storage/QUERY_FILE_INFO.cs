@@ -76,13 +76,13 @@ namespace FastDFS.Client
         }       
     }
 
-    public class FDFSFileInfo
+    public class FDFSFileInfo : FDFSResponse
     {
         public long FileSize;
         public DateTime CreateTime;
         public long Crc32;
 
-        public FDFSFileInfo(byte[] responseByte)
+        protected override void LoadContent(byte[] responseByte)
         {
             byte[] fileSizeBuffer = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE];
             byte[] createTimeBuffer = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE];
