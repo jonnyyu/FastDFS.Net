@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,17 @@ namespace FastDFS.Client
             FDFSRequest storageReqeust = UPLOAD_FILE.Instance.GetRequest(storageNode.EndPoint, storageNode.StorePathIndex, contentByte.Length, fileExt, contentByte);
             UPLOAD_FILE.Response storageResponse = new UPLOAD_FILE.Response(storageReqeust.GetResponse());
             return storageResponse.FileName;
+        }
+
+        public static string UploadFileByName(StorageNode storageNode, string filename)
+        {
+            using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                string extension = Path.GetExtension(filename).Substring(1);
+                FDFSRequest storageRequest = UPLOAD_FILE.Instance.GetRequest(storageNode.EndPoint, storageNode.StorePathIndex, fs.Length, extension, fs);
+                UPLOAD_FILE.Response storageResponse = new UPLOAD_FILE.Response(storageRequest.GetResponse());
+                return storageResponse.FileName;
+            }
         }
 
         /// <summary>

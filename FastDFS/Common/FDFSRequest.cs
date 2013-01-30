@@ -43,6 +43,18 @@ namespace FastDFS.Client
         {
             throw new NotImplementedException();
         }
+
+
+        protected virtual void SendRequest(Stream outputStream)
+        {
+            byte[] headerBuffer = this._header.ToByte();
+            outputStream.Write(headerBuffer, 0, headerBuffer.Length);
+            outputStream.Flush();
+            outputStream.Flush();
+            outputStream.Flush();
+            outputStream.Write(this._body, 0, this._body.Length);
+        }
+
         public virtual byte[] GetResponse()
         {
             if(this._connection == null)
@@ -51,9 +63,8 @@ namespace FastDFS.Client
             try
             {
                 NetworkStream stream = this._connection.GetStream();
-                byte[] headerBuffer = this._header.ToByte();
-                stream.Write(headerBuffer, 0, headerBuffer.Length);
-                stream.Write(this._body, 0, this._body.Length);
+                this.SendRequest(stream);
+                
                 
                 FDFSHeader header = new FDFSHeader(stream);
                 if (header.Status != 0)

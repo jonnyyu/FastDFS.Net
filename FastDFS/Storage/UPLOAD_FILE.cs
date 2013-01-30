@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace FastDFS.Client
 {
@@ -26,6 +27,8 @@ namespace FastDFS.Client
     /// </summary>
     public class UPLOAD_FILE : FDFSRequest
     {
+        private Stream Stream = null;
+
         private static UPLOAD_FILE _instance = null;
         public static UPLOAD_FILE Instance
         {
@@ -39,15 +42,16 @@ namespace FastDFS.Client
         private UPLOAD_FILE()
         {            
         }
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="paramList">
-        /// 1,IPEndPoint    IPEndPoint-->the storage IPEndPoint
-        /// 2,Byte          StorePathIndex
-        /// 3,long          FileSize
-        /// 4,string        File Ext
-        /// 5,byte[FileSize]    File Content
+        /// 1,IPEndPoint     IPEndPoint-->the storage IPEndPoint
+        /// 2,Byte           StorePathIndex
+        /// 3,long           FileSize
+        /// 4,string         File Ext
+        /// 5,byte[FileSize] File Content or FileStream
         /// </param>
         /// <returns></returns>
         public override FDFSRequest GetRequest(params object[] paramList)
@@ -57,9 +61,14 @@ namespace FastDFS.Client
             IPEndPoint endPoint = (IPEndPoint)paramList[0];
             
             byte storePathIndex = (byte)paramList[1];
-            int fileSize = (int)paramList[2];
+            long fileSize = (long)paramList[2];
             string ext = (string)paramList[3];
-            byte[] contentBuffer = (byte[])paramList[4];
+            
+            Stream stream = paramList[4] as Stream;
+            if (paramList[4] is byte[])
+            {
+                stream = new MemoryStream((byte[])paramList[4]);
+            }
 
             #region 拷贝后缀扩展名值
             byte[] extBuffer = new byte[Consts.FDFS_FILE_EXT_NAME_MAX_LEN];
@@ -72,26 +81,37 @@ namespace FastDFS.Client
             Array.Copy(bse, 0, extBuffer, 0, ext_name_len);
             #endregion
             
-            UPLOAD_FILE result = new UPLOAD_FILE();
-            result.Connection = ConnectionManager.GetStorageConnection(endPoint);
+            UPLOAD_FILE request = new UPLOAD_FILE();
+            request.Connection = ConnectionManager.GetStorageConnection(endPoint);
             if(ext.Length>Consts.FDFS_FILE_EXT_NAME_MAX_LEN)
                 throw new FDFSException("file ext is too long");
 
-            long length = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN + contentBuffer.Length;
-            byte[] bodyBuffer = new byte[length];
+            long headerLength = 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN;
+
+            byte[] bodyBuffer = new byte[headerLength];
             bodyBuffer[0] = storePathIndex;
 
             byte[] fileSizeBuffer = Util.LongToBuffer(fileSize);
             Array.Copy(fileSizeBuffer, 0, bodyBuffer, 1, fileSizeBuffer.Length);
-
-            //byte[] extBuffer = Util.StringToByte(ext);
             Array.Copy(extBuffer, 0, bodyBuffer, 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE, extBuffer.Length);
+            
+            request.Stream = stream;
+            request.Body = bodyBuffer;
+            request.Header = new FDFSHeader(headerLength + stream.Length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
+            return request;
+        }
 
-            Array.Copy(contentBuffer, 0, bodyBuffer, 1 + Consts.FDFS_PROTO_PKG_LEN_SIZE + Consts.FDFS_FILE_EXT_NAME_MAX_LEN, contentBuffer.Length);
 
-            result.Body = bodyBuffer;
-            result.Header = new FDFSHeader(length, Consts.STORAGE_PROTO_CMD_UPLOAD_FILE, 0);
-            return result;
+        protected override void SendRequest(Stream outputStream)
+        {
+            base.SendRequest(outputStream);
+
+            int bytesRead = 0;
+            byte[] buffer = new byte[512 * 1024];
+            while ((bytesRead = Stream.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                outputStream.Write(buffer, 0, bytesRead);
+            }
         }
 
         public class Response

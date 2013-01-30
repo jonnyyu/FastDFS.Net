@@ -33,6 +33,10 @@ namespace FastDFS
             //string fileName = FastDFSClient.UploadAppenderFile(node, content, "mdb");
             //主文件
             string fileName = FastDFSClient.UploadFile(node, content, "doc");
+
+            //UploadFileByName
+            //string fileName = FastDFSClient.UploadFileByName(node, @"D:\材料科学与工程基础.doc");
+
             //从文件
             string slavefileName = FastDFSClient.UploadSlaveFile("group1", content, fileName, "-part1", "doc");
 
