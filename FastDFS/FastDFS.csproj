@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{27718A9C-7092-4310-993D-2876D5432F9C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FastDFS.Client</RootNamespace>
+    <AssemblyName>FastDFS</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Connection.cs" />
+    <Compile Include="Common\FDFSConfig.cs" />
+    <Compile Include="Common\ConnectionManager.cs" />
+    <Compile Include="Common\Consts.cs" />
+    <Compile Include="Common\FDFSException.cs" />
+    <Compile Include="Common\FDFSHeader.cs" />
+    <Compile Include="Common\StorageNode.cs" />
+    <Compile Include="FastDFSClient.cs" />
+    <Compile Include="Storage\APPEND_FILE.cs" />
+    <Compile Include="Storage\DELETE_FILE.cs" />
+    <Compile Include="Storage\DOWNLOAD_FILE.cs" />
+    <Compile Include="Storage\GET_METADATA.cs" />
+    <Compile Include="Storage\QUERY_FILE_INFO.cs" />
+    <Compile Include="Storage\SET_METADATA.cs" />
+    <Compile Include="Storage\UPLOAD_APPEND_FILE.cs" />
+    <Compile Include="Storage\UPLOAD_FILE.cs" />
+    <Compile Include="Storage\UPLOAD_SLAVE_FILE.cs" />
+    <Compile Include="Tracker\LIST_ALL_GROUPS.cs" />
+    <Compile Include="Tracker\LIST_ONE_GROUP.cs" />
+    <Compile Include="Tracker\LIST_STORAGE.cs" />
+    <Compile Include="Tracker\QUERY_FETCH_ALL.cs" />
+    <Compile Include="Tracker\QUERY_FETCH_ONE.cs" />
+    <Compile Include="Tracker\QUERY_STORE_WITHOUT_GROUP_ALL.cs" />
+    <Compile Include="Tracker\QUERY_STORE_WITHOUT_GROUP_ONE.cs" />
+    <Compile Include="Tracker\QUERY_STORE_WITH_GROUP_ALL.cs" />
+    <Compile Include="Tracker\QUERY_STORE_WITH_GROUP_ONE.cs" />
+    <Compile Include="Tracker\QUERY_UPDATE.cs" />
+    <Compile Include="Common\FDFSRequest.cs" />
+    <Compile Include="Common\Util.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
