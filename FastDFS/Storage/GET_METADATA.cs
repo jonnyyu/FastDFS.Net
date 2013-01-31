@@ -96,6 +96,7 @@ namespace FastDFS.Client
                         value = Util.ByteToString(metaDataBuffer, startIndex, (metaDataBuffer.Length - 1) - startIndex);
                     else
                         value = Util.ByteToString(metaDataBuffer, startIndex, itemSeparaterIndex - startIndex);
+                    startIndex = itemSeparaterIndex + 1;
 
                     metaData.Add(key, value);
                 } while (itemSeparaterIndex >= 0);
