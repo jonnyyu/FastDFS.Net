@@ -25,11 +25,13 @@ namespace FastDFS.ConsoleApp
                 StorageNode node = FastDFSClient.GetStorageNode("group1");
 
                 string op = args[0];
-                if (string.Compare(op, "upload", true) == 0)
+                if (string.Compare(op, "-u") == 0 ||
+                    string.Compare(op, "--upload") == 0)
                 {
                     DoUpload(node, args[1]);
                 }
-                else if (string.Compare(op, "download", true) == 0)
+                else if (string.Compare(op, "-d") == 0 ||
+                         string.Compare(op, "--download") == 0)
                 {
                     if (args.Length >= 3)
                         DoDownload(node, args[1], args[2]);
@@ -93,8 +95,8 @@ namespace FastDFS.ConsoleApp
 
         private static void Usage()
         {
-            Console.WriteLine("fdfsclient upload <file_to_upload>");
-            Console.WriteLine("fdfsclient download <file_id> [filename]");
+            Console.WriteLine("fdfsclient <-u|--upload> <file_to_upload>");
+            Console.WriteLine("fdfsclient <-d|--download> <file_id> [filename]");
         }
 
         private static List<IPEndPoint> TrackersFromSettings()

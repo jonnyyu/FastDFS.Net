@@ -114,7 +114,6 @@ namespace FastDFS.Client
                 outputStream.Write(buffer, 0, bytesRead);
                 total += bytesRead;
             }
-            Console.WriteLine("total : {0}", total);
         }
 
         public class Response : FDFSResponse
