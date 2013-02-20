@@ -26,6 +26,35 @@ namespace FastDFS.Client
             result.StorePathIndex = trackerResponse.StorePathIndex;
             return result;
         }
+        public static StorageNode QueryStorageNodeForFile(string groupName, string fileid)
+        {
+            FDFSRequest trackerRequest = QUERY_FETCH_ONE.Instance.GetRequest(groupName, fileid);
+            QUERY_FETCH_ONE.Response trackerResponse = new QUERY_FETCH_ONE.Response();
+            trackerRequest.GetResponse(trackerResponse);
+            IPEndPoint storeEndPoint = new IPEndPoint(IPAddress.Parse(trackerResponse.IPStr), trackerResponse.Port);
+            StorageNode result = new StorageNode();
+            result.GroupName = trackerResponse.GroupName;
+            result.EndPoint = storeEndPoint;
+            result.StorePathIndex = 0;
+            return result;
+        }
+        public static StorageNode[] QueryStorageNodesForFile(string groupName, string fileid)
+        {
+            FDFSRequest trackerRequest = QUERY_FETCH_ALL.Instance.GetRequest(groupName, fileid);
+            QUERY_FETCH_ALL.Response trackerResponse = new QUERY_FETCH_ALL.Response();
+            trackerRequest.GetResponse(trackerResponse);
+
+            List<StorageNode> storageNodes = new List<StorageNode>();
+            foreach (string IPStr in trackerResponse.IPStrs)
+            {
+                StorageNode storage = new StorageNode();
+                storage.GroupName = trackerResponse.GroupName;
+                storage.EndPoint = new IPEndPoint(IPAddress.Parse(IPStr), trackerResponse.Port);
+                storage.StorePathIndex = 0;
+                storageNodes.Add(storage);
+            }
+            return storageNodes.ToArray();
+        }
         /// <summary>
         /// 上传文件
         /// </summary>

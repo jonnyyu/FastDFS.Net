@@ -48,12 +48,18 @@ namespace FastDFS.Client
         /// <returns></returns>
         public override FDFSRequest GetRequest(params object[] paramList)
         {
-            if (paramList.Length != 2)
+            if (paramList.Length != 2 && paramList.Length != 3)
                 throw new FDFSException("param count is wrong");
 
             QUERY_FETCH_ONE result = new QUERY_FETCH_ONE();
             string groupName = (string)paramList[0];
             string fileName = (string)paramList[1];
+
+
+            byte cmd = Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_FETCH_ONE;
+            if (paramList.Length == 3)
+                cmd = (byte)paramList[2];
+
             if(groupName.Length > Consts.FDFS_GROUP_NAME_MAX_LEN)
                 throw new FDFSException("GroupName is too long");
 
@@ -66,26 +72,26 @@ namespace FastDFS.Client
             Array.Copy(groupNameBuffer, 0, body, 0, groupNameBuffer.Length);
 
             result.Body = body;
-            result.Header = new FDFSHeader(length,
-                Consts.TRACKER_PROTO_CMD_SERVICE_QUERY_FETCH_ONE, 0);
+            result.Header = new FDFSHeader(length, cmd, 0);
             return result;
         }
 
-        public class Response
+        public class Response : FDFSResponse
         {
             public string GroupName;
             public string IPStr;
             public int Port;
-            public Response(byte[] responseByte)
+
+            protected override void LoadContent(byte[] metaDataBuffer)
             {
                 byte[] groupNameBuffer = new byte[Consts.FDFS_GROUP_NAME_MAX_LEN];
-                Array.Copy(responseByte, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);
+                Array.Copy(metaDataBuffer, groupNameBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN);
                 GroupName = Util.ByteToString(groupNameBuffer).TrimEnd('\0');
                 byte[] ipAddressBuffer = new byte[Consts.IP_ADDRESS_SIZE - 1];
-                Array.Copy(responseByte, Consts.FDFS_GROUP_NAME_MAX_LEN, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
+                Array.Copy(metaDataBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN, ipAddressBuffer, 0, Consts.IP_ADDRESS_SIZE - 1);
                 IPStr = new string(FDFSConfig.Charset.GetChars(ipAddressBuffer)).TrimEnd('\0');
                 byte[] portBuffer = new byte[Consts.FDFS_PROTO_PKG_LEN_SIZE];
-                Array.Copy(responseByte, Consts.FDFS_GROUP_NAME_MAX_LEN + Consts.IP_ADDRESS_SIZE - 1,
+                Array.Copy(metaDataBuffer, Consts.FDFS_GROUP_NAME_MAX_LEN + Consts.IP_ADDRESS_SIZE - 1,
                     portBuffer, 0, Consts.FDFS_PROTO_PKG_LEN_SIZE);
                 Port = (int)Util.BufferToLong(portBuffer, 0);
             }
