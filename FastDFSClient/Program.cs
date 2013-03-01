@@ -12,12 +12,12 @@ namespace FastDFS.ConsoleApp
 
     class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             if (args.Length < 2)
             {
                 Usage();
-                return;
+                return 1;
             }
 
             try
@@ -30,7 +30,9 @@ namespace FastDFS.ConsoleApp
                     string.Compare(op, "--upload") == 0)
                 {
                     StorageNode node = FastDFSClient.GetStorageNode("group1");
-                    DoUpload(node, args[1]);
+                    string fileid = DoUpload(node, args[1]);
+                    Console.WriteLine("{0}", fileid);
+                    Console.WriteLine("http://{0}/{1}", trackers[0].Address.ToString(), fileid);
                 }
                 else if (string.Compare(op, "-d") == 0 ||
                          string.Compare(op, "--download") == 0)
@@ -102,13 +104,15 @@ namespace FastDFS.ConsoleApp
                 {
                     Console.WriteLine("Invalid options");
                     Usage();
+                    return 1;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("ERROR:{0}", ex.Message);
+                return 1;
             }
-            return;
+            return 0;
         }
 
         private static StorageNode SelectStorageNode(StorageNode[] nodes, string fileName, int timeoutSecs)
@@ -165,7 +169,7 @@ namespace FastDFS.ConsoleApp
 
             //download file
             string destDir = Environment.CurrentDirectory;
-            string destName = metaData["Name"] + Path.GetExtension(fileId);
+            string destName = metaData["filename"] + Path.GetExtension(fileId);
 
             if (!string.IsNullOrEmpty(destFileName))
             {
@@ -180,16 +184,16 @@ namespace FastDFS.ConsoleApp
             Console.WriteLine("{0}", fullName);
         }
 
-        private static void DoUpload(StorageNode node, string fileName)
+        private static string DoUpload(StorageNode node, string fileName)
         {
             // upload file
             string id = FastDFSClient.UploadFileByName(node, fileName);
-            Console.WriteLine("{0}/{1}", node.GroupName, id);
 
             // set name as metadata
             Dictionary<string, string> metaData = new Dictionary<string, string>();
-            metaData["Name"] = Path.GetFileNameWithoutExtension(fileName);
+            metaData["filename"] = Path.GetFileNameWithoutExtension(fileName);
             FastDFSClient.SetMetaData(node, id, metaData);
+            return string.Format("{0}/{1}", node.GroupName, id);
         }
 
         private static void Usage()
