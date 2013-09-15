@@ -9,10 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>FastDFS.ConsoleApp</RootNamespace>
     <AssemblyName>fdfsclient</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,7 +38,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="NDesk.Options">
+      <HintPath>..\FastDFS\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="ManyConsole">
+      <HintPath>..\FastDFS\packages\ManyConsole.0.4.2.16\lib\ManyConsole.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -47,10 +55,11 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FastDFS\FastDFS.csproj">
-      <Project>{27718a9c-7092-4310-993d-2876d5432f9c}</Project>
+      <Project>{27718A9C-7092-4310-993D-2876D5432F9C}</Project>
       <Name>FastDFS</Name>
     </ProjectReference>
   </ItemGroup>
