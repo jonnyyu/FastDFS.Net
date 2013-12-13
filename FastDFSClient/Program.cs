@@ -266,11 +266,19 @@ namespace FastDFS.ConsoleApp
 	{
 		public static int Main (string[] args)
 		{
-			// locate any commands in the assembly (or use an IoC container, or whatever source)
-			var commands = GetCommands();
+            try
+            {
+                // locate any commands in the assembly (or use an IoC container, or whatever source)
+                var commands = GetCommands();
 
-			// then run them.
-			return ConsoleCommandDispatcher.DispatchCommand(commands, args, Console.Out);
+                // then run them.
+                return ConsoleCommandDispatcher.DispatchCommand(commands, args, Console.Out);
+            }
+            catch(Exception ex)
+            {
+                Console.Error.WriteLine("Unhandled Exception:{0}\n{1}", ex.Message, ex.StackTrace);
+                return 1;
+            }
 		}
 
 		public static IEnumerable<ConsoleCommand> GetCommands()
