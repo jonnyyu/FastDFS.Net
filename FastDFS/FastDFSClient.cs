@@ -64,7 +64,7 @@ namespace FastDFS.Client
         /// <returns>文件名</returns>
         public static string UploadFile(StorageNode storageNode,byte[] contentByte,string fileExt)
         {
-            FDFSRequest storageRequest = UPLOAD_FILE.Instance.GetRequest(storageNode.EndPoint, storageNode.StorePathIndex, contentByte.Length, fileExt, contentByte);
+            FDFSRequest storageRequest = UPLOAD_FILE.Instance.GetRequest(storageNode.EndPoint, storageNode.StorePathIndex, (long)contentByte.Length, fileExt, contentByte);
             UPLOAD_FILE.Response storageResponse = new UPLOAD_FILE.Response();
             storageRequest.GetResponse(storageResponse);
             return storageResponse.FileName;
