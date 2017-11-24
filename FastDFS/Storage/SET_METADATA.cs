@@ -91,7 +91,7 @@ namespace FastDFS.Client
             foreach (KeyValuePair<string, string> p in metaData)
             {
                 // insert a separater if this is not the first meta data item.
-                if (metaDataBuffer.Count == 0)
+                if (metaDataBuffer.Count != 0)
                 {
                     metaDataBuffer.Add(Consts.METADATA_PAIR_SEPARATER);
                 }
