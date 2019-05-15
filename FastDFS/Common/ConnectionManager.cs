@@ -129,7 +129,8 @@ namespace FastDFS.Client
         public static Connection GetTrackerConnection()
         {
             Random random = new Random();
-            int index = random.Next(trackerPools.Count);
+            //int index = random.Next(trackerPools.Count);
+            int index = random.Next(listTrackers.Count); //Pool中的数据个数大于Trackers的
             Pool pool = trackerPools[listTrackers[index]];
             return pool.GetConnection();
         }
